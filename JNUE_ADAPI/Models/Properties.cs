@@ -1,0 +1,40 @@
+﻿namespace JNUE_ADAPI.Models
+{
+    /// Properties
+    public class Properties
+    {
+        /// LDAP 경로
+        public static string LDAPPath { get { return "LDAP://211.225.159.44"; } } //://211.225.159.44
+
+        ///LDAP 관리자 아이디
+        public static string LDAPUser { get { return @"hddemo\administrator"; } }
+
+        ///LDAP 비밀번호
+        public static string LDAPPassword { get { return "P@ssw0rd"; } }
+
+        /// Azure Client Id
+        public static string AzClientID { get { return "2582b477-78b9-4bf2-92c1-c48aeccc8511"; } }
+
+        /// Azure Client Secret
+        public static string AzClientSecret { get { return "2CMZATzbB3xKW8yuQm/FFQfc5xw9I4FhVnkE2OHWmCI="; } }
+
+        /// Azure Graph Api
+        /// TODO: graph.windows.net/jnue.kr/ 주소 확인해야 함(안쓰는 것으로 현재 확인)   
+        public static string AzGraphApi { get { return "https://graph.windows.net/hddemo.co.kr/"; } }
+
+        /// Azure Sevice Url
+        /// TODO: Azure domain url : jnue.kr/ 주소 확인해야 함
+        public static string AzDomainUrl { get { return "hddemo.co.kr"; } } //jnue.ac.kr
+        
+        /// TODO: Azure service url : https://login.microsoftonline.com/jnue.kr/oauth2/token 주소 확인해야 함(안쓰는 것으로 현재 확인)
+        public static string AzADAuthority { get { return "https://login.windows.net/hddemo.co.kr/oauth2/token"; } }
+
+        /// Azure Sevice Url
+        public static string LDAPSiteKey { get { return "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; } }
+
+        /// AD Federation Server Url
+        public static string ADFS_URL { get { return @"https://adfs.hddemo.co.kr/adfs/ls/?lc=1042&client-request-id=4d5bbac1-8655-464f-acdc-862c63f8729b&username=%40hddemo.co.kr&wa=wsignin1.0&wtrealm=urn%3afederation%3aMicrosoftOnline&wctx=estsredirect%3d2%26estsrequest%3drQIIAeNisFLOKCkpKLbS1y_ILypJzNHLT0vLTE7VS87P1csvSs9MAbGKhLgEDu6K9g1t83dbc6dNJ_lH0exVjGo4dernJOalZOal6yUWF1RcYGTsYmIxNDAx2sTE6uvs6-R5gmnCWblbTIL-RemeKeHFbqkpqUWJJZn5eY-YeEOLU4v883IqQ_KzU_N2MauYmaaZmFgYGeomJiUn6ZqYmJnpWlgkp-iaGKeamhmlJiYnJpkcYNkQcoFF4BULjwGzFQcHlwCDBIMCww8WxkWsQIcHTr9_ZHZxv3Pj4e63y8TZ6k-x6od6V3mZGjmnGmVb5Jik-7oX5WubuCa65mcaJke4h3kY-BYkZkQ5WlalZbjamlsZTmATmsDGtIvTljgP25ckFqWnltiqGqWlpKYlluaUgIUB0&popupui="; }
+        }
+    }
+}
+//https://mso365adfs.jnue.ac.kr/adfs/ls/?lc=1042&client-request-id=20669219-886e-4dc3-8baa-07aed4ed1503&wa=wsignin1.0&wtrealm=urn%3afederation%3aMicrosoftOnline&wctx=estsredirect%3d2%26estsrequest%3drQIIAeNisFLOKCkpKLbS1y_ILypJzNHLT0vLTE7VS87P1csvSs9MAbGKhLgEJCelKeR1HPbtXsW-7spbUeZVjGo4dernJOalZOal6yUWF1RcYGTsYmIxNDAx2sTE6uvs6-R5gmnCWblbTIL-RemeKeHFbqkpqUWJJZn5eY-YeEOLU4v883IqQ_KzU_MmMfPl5Kdn5sUXF6XFp-XklwMFgMYXJCaXxJdkJmenluxiVjFLsQAaYGCha2RmmKhrYmZoqptoZGqpa2RpkGpoZGZilGaWcoBlQ8gFFoEfLIyLWIF-Edr3q1k4v8Z3DS9Pa0wRl9IpVv2stOxwZ6-MsMhKy6AUz6p8x1BfHzNvY7N0i2SDNAtPx-Is_YB0baPUAgNPWxMrw12ctsT53r4ksSg9tcRW1SgtJTUtsTSnBCwMAA2&popupui=
