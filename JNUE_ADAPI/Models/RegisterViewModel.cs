@@ -8,20 +8,18 @@ namespace JNUE_ADAPI.Models
         [Required]
         [Display(Name = "학번")]
         public int Stnt_Numb { get; set; }
-        [Required]
-        [Display(Name = "성명")]
-        public string realName { get; set; }
-
-        // 생년월일
-        [Required]
-        [Display(Name = "일")]
-        public int Day { get; set; }
-        [Required]
-        [Display(Name = "월")]
-        public int Month { get; set; }
-        [Required]
-        [Display(Name = "생년")]
-        public int Year { get; set; }            
+        //[Required]
+        //[Display(Name = "성명")]
+        //public string realName { get; set; }
+        //[Required]
+        //[Display(Name = "일")]
+        //public int Day { get; set; }
+        //[Required]
+        //[Display(Name = "월")]
+        //public int Month { get; set; }
+        //[Required]
+        //[Display(Name = "생년")]
+        //public int Year { get; set; }            
     }
 
     public class RegisterViewModel
@@ -32,10 +30,10 @@ namespace JNUE_ADAPI.Models
         public string ID { get; set; }
 
         [Required]
-        [StringLength(100, ErrorMessage = "{0}은(는) {2}자 이상이어야 합니다.", MinimumLength = 6)]
+        [StringLength(100, ErrorMessage = "{0}은(는) {2}자 이상이어야 합니다.", MinimumLength = 7)]
         [DataType(DataType.Password)]
         [Display(Name = "암호")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[^\da-zA-Z]).{8,15}$", ErrorMessage = "비밀번호는 1개 이상의 영소문자, 영대문자, 특수문자, 숫자를 포함하여 8~15자 이내로 입력하여야 합니다.")]
+        [RegularExpression(@"^(?=.*[a-z])(?=.*\d).{3,15}$", ErrorMessage = "비밀번호는 1개 이상의 영소문자, 숫자를 포함하여 7~15자 이내로 입력하여야 합니다.")] //(?=.*[A-Z])(?=.*[^\da-zA-Z])
         public string Password { get; set; }
 
         [DataType(DataType.Password)]

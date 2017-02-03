@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace JNUE_ADAPI.AD
 {
@@ -19,8 +20,7 @@ namespace JNUE_ADAPI.AD
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-                var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid + "@" + Properties.AzDomainUrl);
-
+                var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid);
                 using (var response = await client.GetAsync(request))
                 {
                     if (response.Content != null)
@@ -35,14 +35,13 @@ namespace JNUE_ADAPI.AD
         public static async Task<string> setUsageLocation(string userid)
         {
             var token = await oAuth.getSessionToken();
-            var obj = "{\"usageLocation\": \"KR\" }";
+            var obj = "{\"usageLocation\": \"KR\"}";
             var res = "";
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
 
             using (var client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
-
                 var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid);
 
                 using (var response = await PatchAsync(client, request, json))
@@ -56,16 +55,17 @@ namespace JNUE_ADAPI.AD
             return res;
         }
         
-        public static async Task<string> setAssignLicense(string userid, string skuid, string disableplans)
+        public static async Task<string> setLicense(string userid, string skuid, string disableplans)
         {
             var token = await oAuth.getSessionToken();
             var res = "";
             var obj = "";
 
             //if (disableplans.Length > 0)
-            if (disableplans.Equals("NONE") != true)
+            if (disableplans.Equals("") != true)
             {
-                obj = "{\"addLicenses\": [{\"disabledPlans\": [\"" + disableplans + "\"], \"skuId\": \"" + skuid + "\"} ], \"removeLicenses\": [] }";
+                obj = "{\"addLicenses\": [{\"disabledPlans\": [\"" + disableplans + "\"], \"skuId\": \"" + skuid + "\"} ], \"removeLicenses\": [] }"; 
+                //여기서 location세팅 안됨
             }
             else
             {
@@ -90,7 +90,7 @@ namespace JNUE_ADAPI.AD
             return obj;
         }
         
-        public static async Task<string> delAssignLicense(string userid, string skuid)
+        public static async Task<string> removeLicense(string userid, string skuid, string empty)
         {
             var token = await oAuth.getSessionToken();
             var res = "";

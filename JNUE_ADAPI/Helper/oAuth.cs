@@ -8,32 +8,23 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
+using System.Diagnostics;
 
 namespace JNUE_ADAPI.Helper
 {
-    /// <summary>
-    /// oAuth
-    /// </summary>
     public class oAuth
     {
         static MediaTypeWithQualityHeaderValue Json = new MediaTypeWithQualityHeaderValue("application/json");
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        
         public static async Task<string> getSessionToken()
         {
             AuthenticationContext authenticationContext = new AuthenticationContext(Properties.AzADAuthority, false);
             ClientCredential clientCred = new ClientCredential(Properties.AzClientID, Properties.AzClientSecret);
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenAsync("https://graph.windows.net", clientCred);
+            
             return authenticationResult.AccessToken;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="resourceid"></param>
-        /// <returns></returns>
+        
         public static async Task<string> getSessionToken(string resourceid)
         {
             AuthenticationContext authenticationContext = new AuthenticationContext(Properties.AzADAuthority, false);
@@ -42,12 +33,7 @@ namespace JNUE_ADAPI.Helper
             return authenticationResult.AccessToken;
         }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="accessToken"></param>
-        /// <returns></returns>
+        
         public static async Task<OfficeUser> getUserInfoAsync(string accessToken)
         {
             OfficeUser myInfo = new OfficeUser();
@@ -65,21 +51,14 @@ namespace JNUE_ADAPI.Helper
                             var json = JObject.Parse(await response.Content.ReadAsStringAsync());
                             myInfo.name = json?["displayName"]?.ToString();
                             myInfo.address = json?["mail"]?.ToString().Trim().Replace(" ", string.Empty);
-
                         }
                     }
-
                 }
-
             }
 
             return myInfo;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <returns></returns>
+        
         public static async Task<string> Authorize()
         {
             AuthenticationContext authenticationContext = new AuthenticationContext(Properties.AzADAuthority, false);
@@ -87,17 +66,9 @@ namespace JNUE_ADAPI.Helper
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenAsync("https://graph.microsoft.com/", clientCred);
             return authenticationResult.AccessToken;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="context"></param>
-        /// <param name="resourceId"></param>
-        /// <returns></returns>
+        
         public static async Task<string> GetTokenHelperAsync(AuthenticationContext context, string resourceId)
         {
-
-
             string accessToken = null;
             AuthenticationResult result = null;
             string myId = Properties.AzClientID;
@@ -109,13 +80,7 @@ namespace JNUE_ADAPI.Helper
             return accessToken;
         }
 
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <param name="passwd"></param>
-        /// <returns></returns>
+        
         public static async Task<string> getLoginToken(string userid, string passwd)
         {
             string res = "";
@@ -138,22 +103,15 @@ namespace JNUE_ADAPI.Helper
             {
                 if (response.Content != null)
                 {
-
                     //var headers = response.Headers.ToString();
                     res = await response.Content.ReadAsStringAsync();
                     //res = headers;
                 }
-
             };
             dynamic result = JObject.Parse(res);
             return result.access_token;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="code"></param>
-        /// <returns></returns>
+        
         public static async Task<string> getChangeCodeToToken(string code)
         {
             string res = "";
@@ -175,20 +133,11 @@ namespace JNUE_ADAPI.Helper
                 {
                     res = await response.Content.ReadAsStringAsync();
                 }
-
             };
-
-
             dynamic result = JObject.Parse(res);
             return result.access_token;
         }
-
-        /// <summary>
-        /// 
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <param name="passwd"></param>
-        /// <returns></returns>
+        
         public static async Task<string> sessionLogin(string userid, string passwd)
         {
             string res = "";
@@ -211,17 +160,11 @@ namespace JNUE_ADAPI.Helper
                 {
                     res = await response.Content.ReadAsStringAsync();
                 }
-
             };
             return res;
         }
-
-        /// <summary>
-        /// getPasswords
+        
         /// TODO : 이건 로컬 주소 썼는데, 필요없으면 날려야 함
-        /// </summary>
-        /// <param name="userid"></param>
-        /// <returns></returns>
         public static async Task<string> getPasswords(string userid)
         {
             string pass = "";
@@ -238,7 +181,6 @@ namespace JNUE_ADAPI.Helper
 
                 if (res_code.Equals("0"))
                 {
-
                     byte[] data = Convert.FromBase64String(res_mesg);
                     string decodedString = Encoding.UTF8.GetString(data);
                     pass = decodedString;

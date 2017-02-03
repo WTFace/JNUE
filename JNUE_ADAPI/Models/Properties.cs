@@ -3,13 +3,11 @@
     /// Properties
     public class Properties
     {
+        public static string FacLicense { get { return "78e66a63-337a-4a9a-8959-41c6654dfb56"; } }
+        public static string StuLicense { get { return "e82ae690-a2d5-4d76-8d30-7c6e01e6022e"; } }
         /// LDAP 경로
         public static string LDAPPath { get { return "LDAP://211.225.159.44"; } } //://211.225.159.44
-
-        ///LDAP 관리자 아이디
         public static string LDAPUser { get { return @"hddemo\administrator"; } }
-
-        ///LDAP 비밀번호
         public static string LDAPPassword { get { return "P@ssw0rd"; } }
 
         /// Azure Client Id
@@ -19,7 +17,6 @@
         public static string AzClientSecret { get { return "2CMZATzbB3xKW8yuQm/FFQfc5xw9I4FhVnkE2OHWmCI="; } }
 
         /// Azure Graph Api
-        /// TODO: graph.windows.net/jnue.kr/ 주소 확인해야 함(안쓰는 것으로 현재 확인)   
         public static string AzGraphApi { get { return "https://graph.windows.net/hddemo.co.kr/"; } }
 
         /// Azure Sevice Url

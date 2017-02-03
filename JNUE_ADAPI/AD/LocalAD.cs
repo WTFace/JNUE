@@ -21,8 +21,7 @@
         private static AuthenticationTypes AuthTypes = AuthenticationTypes.Signing | AuthenticationTypes.Sealing | AuthenticationTypes.Secure;
         private static int intPort = 389;
 
-        ///  SecureKey(string secure_key)
-        /// <param name="secure_key"></param>
+        
         public static bool SecureKey(string secure_key)
         {
             if (Properties.LDAPSiteKey.Equals(secure_key))
@@ -55,7 +54,7 @@
                 {
                     DirectorySearcher ds = new DirectorySearcher(entry);
                     ds.SearchScope = SearchScope.Subtree;
-                    ds.Filter = "(objectCategory=user)";
+                    ds.Filter = "(&(objectCategory=person)(extensionAttribute1=*))"; //O365users only
                     ds.PropertiesToLoad.Add(attributeName);
                     SearchResultCollection allResult = ds.FindAll();
 
@@ -115,7 +114,7 @@
         }
 
         ///  attributeName 명과 사용자 아이디를 넣으면 값을 끄집어 온다. 1개만
-        public static string AttributeValuesSingleString(string attributeName, string userid)
+        public static string getSingleAttr(string attributeName, string stnt_numb)
         {
             try
             {
@@ -123,7 +122,7 @@
                 DirectoryEntry entry = new DirectoryEntry(Properties.LDAPPath, Properties.LDAPUser, Properties.LDAPPassword, AuthTypes);
                 DirectorySearcher ds = new DirectorySearcher(entry);
                 ds.SearchScope = SearchScope.Subtree;
-                ds.Filter = "(&(objectCategory=user) (sAMAccountName=" + userid + "))";
+                ds.Filter = "(&(objectCategory=user) (extensionAttribute1=" + stnt_numb + "))";
                 ds.PropertiesToLoad.Add(attributeName);
                 SearchResult result = ds.FindOne();
 
@@ -189,7 +188,7 @@
         }
         
         /// 사용자 생성
-        public static string CreateUserAccount(string userid, string passwd, string realName, string stnt_numb)
+        public static string CreateUserAccount(string userid, string passwd, string stnt_numb)
         {
             try
             {
@@ -204,14 +203,22 @@
                 using (var haksaContext = new DAL.HaksaContext())
                 {             
                     var haksa = haksaContext.HaksaMembers.Where(m => m.stnt_numb.ToString() == stnt_numb).ToList();
-                    
+                    entry_ur.Properties["displayName"].Add(haksa[0].stnt_knam);
                     if (haksa[0].role == "학부")
                     {
-                        entry_ur.Properties["groupMembershipSAM"].Add("students");
+                        if(haksa[0].status == "휴학")
+                        {
+                            entry_ur.Properties["description"].Add("휴학");
+                        }
+                        else if (haksa[0].status == "졸업")
+                        {
+                            entry_ur.Properties["description"].Add("졸업");
+                        }
+                        entry_ur.Properties["employeeType"].Add("student");
                     }
                     else if (haksa[0].role == "교수")
                     {
-                        entry_ur.Properties["groupMembershipSAM"].Add("professor");
+                        entry_ur.Properties["employeeType"].Add("faculty");
                     }
                 }
 
@@ -219,8 +226,7 @@
                 entry_ur.Properties["name"].Add(userid);
                 entry_ur.Properties["sAMAccountName"].Add(userid);  
                 entry_ur.Properties["userPrincipalName"].Add(userid + "@" + Properties.AzDomainUrl);
-                entry_ur.Properties["displayName"].Add(realName);
-                entry_ur.Properties["description"].Add(realName);
+                //entry_ur.Properties["description"].Add(realName);
                 entry_ur.Properties["mail"].Add(userid + "@"+ Properties.AzDomainUrl);
                 entry_ur.Properties["proxyAddresses"].Add("SMTP:" + userid + "@" + Properties.AzDomainUrl);
                 entry_ur.Properties["msExchHideFromAddressLists"].Add("TRUE");
@@ -306,8 +312,6 @@
             try
             {
                 DirectoryEntry entry = GetDirectoryEntryByUserId(userid);
-                //entry.Properties["realName"].Add(realName);
-                //entry.Properties["description"].Add(realName);
                 entry.Properties["realName"].Value = realName;
                 entry.Properties["description"].Value = realName;
                 entry.CommitChanges();
@@ -375,7 +379,7 @@
         {
             try
             {
-                string userDn = AttributeValuesSingleString("distinguishedName", userid);
+                string userDn = getSingleAttr("distinguishedName", userid);
                 DirectoryEntry group_entry = GetDirectoryEntryByGroup(groupname);
                 group_entry.Properties["member"].Add(userDn);
                 group_entry.CommitChanges();
@@ -393,7 +397,7 @@
         {
             try
             {
-                string userDn = AttributeValuesSingleString("distinguishedName", userid);
+                string userDn = getSingleAttr("distinguishedName", userid);
                 DirectoryEntry group_entry = GetDirectoryEntryByGroup(groupname);
                 group_entry.Properties["member"].Remove(userDn);
                 group_entry.CommitChanges();
