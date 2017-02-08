@@ -6,9 +6,6 @@ using System;
 using JNUE_ADAPI.AD;
 using log4net;
 using System.Reflection;
-using System.Net.Http;
-using System.Text;
-using System.Diagnostics;
 
 namespace JNUE_ADAPI.Controllers
 {
@@ -18,53 +15,62 @@ namespace JNUE_ADAPI.Controllers
         readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         static StntNumbCheckViewModel _StntNumbModel = new StntNumbCheckViewModel();
         #endregion
-        // Get: 학번/교번 체크
+        
+        [HttpGet]
         public ActionResult Index()
         {
-            //AzureAD.setUsageLocation("111@hddemo.co.kr");
-            //AzureAD.setLicense("111@hddemo.co.kr", Properties.StuLicense, ""); //여기서 call하면 할당됨
-            return View();
-        }
-        
-        
+            AzureAD.setUsageLocation("112@hddemo.co.kr");
+            AzureAD.setLicense("112@hddemo.co.kr", Properties.StuLicense,"", "");
+            return View();}
+
         [HttpPost]
         public ActionResult Index(StntNumbCheckViewModel model)
         {
             if (ModelState.IsValid)
             {
-                //var pass_word = string.Format("J{0:D4}{1:D2}{2:D2}#", model.Year, model.Month, model.Day);
-                //logger.Debug(string.Format("pass_word: {0}", pass_word));
                 using (var haksaContext = new HaksaContext())
                 {
-                    try
-                    {
+                    try{
                         var haksa = haksaContext.HaksaMembers.Where(m => m.stnt_numb == model.Stnt_Numb).ToList();
 
                         if (haksa.Count == 1) // 조회결과가 1개이고
                         {
                             if (haksa[0].user_used == "N") // 비활성화된 계정
-                            {
-                                ModelState.AddModelError("", "입력하신 학번은 현재 사용중이지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
-                            }
+                            {ModelState.AddModelError("", "입력하신 학번은 현재 사용중이지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");}
                             else if (LocalAD.ExistAttributeValue("extensionAttribute1", model.Stnt_Numb.ToString()) == true)
-                            {   // AD에 있는 학번이면
+                            {
+                                string upn = LocalAD.getSingleAttr("userPrincipalName", model.Stnt_Numb.ToString()); //@hddemo 포함
+                                TempData["upn"] = upn; //login시 id 넘겨줄 용도
 
-                                string uid = LocalAD.getSingleAttr("userPrincipalName", model.Stnt_Numb.ToString()); //@hddemo 포함
-                                TempData["id"] = uid; //login시 id 넘겨줄 용도
+                                if (haksa[0].status.ToString() != LocalAD.getSingleAttr("description", model.Stnt_Numb.ToString())) //학적변동
+                                {
+                                    LocalAD.UpdateStatus(model.Stnt_Numb.ToString(), haksa[0].status.ToString());
+                                    TempData["status"] = "학적 상태가 변동되었습니다.";
+                                    //License();
+                                }
 
-                                //여기서는 안되고 Index() 내에서는 됨
-                                AzureAD.setUsageLocation(uid);
+                                AzureAD.setUsageLocation(upn);
                                 if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "student")
                                 {
-                                    var res = AzureAD.setLicense(uid, Properties.StuLicense, "");
+                                    if (haksa[0].status==1){ //재
+                                        AzureAD.setLicense(upn, "", Properties.PlusLicense, "\"a23b959c-7ce8-4e57-9140-b90eb88a9e97\",\"882e1d05-acd1-4ccb-8708-6ee03664b117\",\"2078e8df-cff6-4290-98cb-5408261a760a\"");
+                                    }
+                                    else if (haksa[0].status == 2){ //휴
+                                        var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, "");
+                                    }
+                                    else{ //졸
+                                    }
                                 }
                                 else if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "faculty")
                                 {
-                                    AzureAD.setLicense(uid, Properties.FacLicense, "");
+                                    if (haksa[0].status == 0){ //퇴직
+                                        AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
+                                    }
+                                    else{
+                                        var res = AzureAD.setLicense(upn, Properties.FacLicense,"", ""); //재직
+                                    }
                                 }
-
                                 return RedirectToAction("Alert", "Home");
-                                //return Redirect(Properties.ADFS_URL); //RedirectToAction("Login","Home")
                             }
                             else
                             {                                    
@@ -76,21 +82,22 @@ namespace JNUE_ADAPI.Controllers
                         else if (haksa.Count == 0)
                         {
                             // 조회 결과가 없으면
-                            ModelState.AddModelError("", "입력하신 학번과 생년월일 값이 조회되지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
+                            ModelState.AddModelError("", "입력하신 학번이 조회되지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
                         }
                         else if (haksa.Count > 1)
                         {
-                            ModelState.AddModelError("", "입력하신 학번과 생년월일 값이 2건이상 조회되었습니다.\n관리자에게 문의하여 주시기 바랍니다.");
+                            ModelState.AddModelError("", "입력하신 학번이 2건이상 조회되었습니다.\n관리자에게 문의하여 주시기 바랍니다.");
                         }
                     }
                     catch (Exception ex)
                     {
-                        ModelState.AddModelError("", "학번 및 생년월일 조회에 실패하였습니다.\n관리자에게 문의하여 주시기 바랍니다.");
+                        ModelState.AddModelError("", "학번 조회에 실패하였습니다.\n관리자에게 문의하여 주시기 바랍니다.");
                         logger.Debug(ex.ToString());
                     }
                 }
             }
             // 이 경우 오류가 발생한 것이므로 폼을 다시 표시
+            
             return View(model);
         }
         
@@ -118,8 +125,6 @@ namespace JNUE_ADAPI.Controllers
                 }
                 ModelState.AddModelError("", "사용자를 추가할 수 없습니다.\n관리자에게 문의하여 주시기 바랍니다.");
             }
-            
-            // 이 경우 오류가 발생한 것이므로 폼을 다시 표시하십시오.
             return View(model);
         }
     }

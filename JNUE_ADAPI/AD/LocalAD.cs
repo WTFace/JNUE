@@ -206,14 +206,6 @@
                     entry_ur.Properties["displayName"].Add(haksa[0].stnt_knam);
                     if (haksa[0].role == "학부")
                     {
-                        if(haksa[0].status == "휴학")
-                        {
-                            entry_ur.Properties["description"].Add("휴학");
-                        }
-                        else if (haksa[0].status == "졸업")
-                        {
-                            entry_ur.Properties["description"].Add("졸업");
-                        }
                         entry_ur.Properties["employeeType"].Add("student");
                     }
                     else if (haksa[0].role == "교수")
@@ -226,7 +218,7 @@
                 entry_ur.Properties["name"].Add(userid);
                 entry_ur.Properties["sAMAccountName"].Add(userid);  
                 entry_ur.Properties["userPrincipalName"].Add(userid + "@" + Properties.AzDomainUrl);
-                //entry_ur.Properties["description"].Add(realName);
+                entry_ur.Properties["description"].Add("z");
                 entry_ur.Properties["mail"].Add(userid + "@"+ Properties.AzDomainUrl);
                 entry_ur.Properties["proxyAddresses"].Add("SMTP:" + userid + "@" + Properties.AzDomainUrl);
                 entry_ur.Properties["msExchHideFromAddressLists"].Add("TRUE");
@@ -277,13 +269,13 @@
         }
         
         /// 개인 사용자에 대한 디렉토리 앤트리를 뽑아온다.
-        public static DirectoryEntry GetDirectoryEntryByUserId(string userid)
+        public static DirectoryEntry GetDirectoryEntryByUserId(string stnt_numb)
         {
             DirectoryEntry entry = new DirectoryEntry(Properties.LDAPPath, Properties.LDAPUser, Properties.LDAPPassword, AuthTypes);
 
             var de = entry;
             var deSearch = new DirectorySearcher(de)
-            { SearchRoot = de, Filter = "(&(objectCategory=user)(cn=" + userid + "))" };
+            { SearchRoot = de, Filter = "(&(objectCategory=user)(extensionAttribute1=" + stnt_numb + "))" };
 
             var results = deSearch.FindOne();
             return results != null ? results.GetDirectoryEntry() : null;
@@ -307,13 +299,12 @@
             }
         }
         
-        public static string UpdateUserAccount(string userid, string realName)
+        public static string UpdateStatus(string stnt_numb, string status)
         {
             try
             {
-                DirectoryEntry entry = GetDirectoryEntryByUserId(userid);
-                entry.Properties["realName"].Value = realName;
-                entry.Properties["description"].Value = realName;
+                DirectoryEntry entry = GetDirectoryEntryByUserId(stnt_numb);
+                entry.Properties["description"].Value = status;
                 entry.CommitChanges();
                 return "SUCCESS";
             }

@@ -21,7 +21,6 @@ namespace JNUE_ADAPI.Helper
             AuthenticationContext authenticationContext = new AuthenticationContext(Properties.AzADAuthority, false);
             ClientCredential clientCred = new ClientCredential(Properties.AzClientID, Properties.AzClientSecret);
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenAsync("https://graph.windows.net", clientCred);
-            
             return authenticationResult.AccessToken;
         }
         
@@ -32,7 +31,6 @@ namespace JNUE_ADAPI.Helper
             AuthenticationResult authenticationResult = await authenticationContext.AcquireTokenAsync(resourceid, clientCred);
             return authenticationResult.AccessToken;
         }
-
         
         public static async Task<OfficeUser> getUserInfoAsync(string accessToken)
         {
@@ -55,7 +53,6 @@ namespace JNUE_ADAPI.Helper
                     }
                 }
             }
-
             return myInfo;
         }
         

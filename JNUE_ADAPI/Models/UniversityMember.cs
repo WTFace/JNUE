@@ -11,11 +11,8 @@ namespace JNUE_ADAPI.Models
         [Key]
         public int stnt_numb { get; set; }
 
-        // 패스워드(j+생년월일+#)
-        public string pass_word { get; set; }
-
         // H:재학, 휴학, 사용중인교직원
-        public string status { get; set; }
+        public int status { get; set; }
 
         // 성명
         public string stnt_knam { get; set; }
