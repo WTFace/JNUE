@@ -26,7 +26,7 @@
         public static string AzDomainUrl { get { return "hddemo.co.kr"; } } //jnue.ac.kr
         
         /// TODO: Azure service url : https://login.microsoftonline.com/jnue.kr/oauth2/token 주소 확인해야 함(안쓰는 것으로 현재 확인)
-        public static string AzADAuthority { get { return "https://login.microsoftonline.com/hddemo.co.kr/oauth2/token"; } } //login.microsoftonline.com/hddemo
+        public static string AzADAuthority { get { return "https://login.microsoftonline.com/263b037d-11f1-47e8-9d87-d6d61b5cc753/oauth2/token"; } } //login.microsoftonline.com/hddemo
 
         /// Azure Sevice Url
         public static string LDAPSiteKey { get { return "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"; } }

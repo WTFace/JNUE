@@ -2,10 +2,13 @@
 using JNUE_ADAPI.Models;
 using System;
 using System.Net.Http;
+using System.Web;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
 using System.Diagnostics;
+using System.IO;
+using Newtonsoft.Json;
 
 namespace JNUE_ADAPI.AD
 {
@@ -15,7 +18,6 @@ namespace JNUE_ADAPI.AD
         public static async Task getToken()
         {
             var token = await oAuth.getSessionToken();
-
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
         }
@@ -63,39 +65,40 @@ namespace JNUE_ADAPI.AD
             return res;
         }
         
-        public static async Task<string> setLicense(string userid, string skuid1,string skuid2, string disables)
+
+        public static async Task<string> setLicense(string userid, string skuid1, string skuid2, string disables)
         {
             var token = await oAuth.getSessionToken();
-            var res = "";
+            var res="";
             var obj = "";
             
             if (disables.Equals("") != true)
             {
-                obj = "{\"addLicenses\": [{\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"},{\"disabledPlans\": ["+ disables +"], \"skuId\": \"" + skuid2 + "\"}], \"removeLicenses\": []}";
-            }
+                obj = "{\"addLicenses\": [{\"disabledPlans\": ["+ disables +"], \"skuId\": \"" + skuid2 + "\"}, {\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [] }";
+            } //
             else
             {
-                obj = "{\"addLicenses\": [{\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"} ], \"removeLicenses\": [\""+ skuid2 +"\"] }"; //휴
+                obj = "{\"addLicenses\": [], \"removeLicenses\": [\""+ skuid2 +"\"] }"; //휴
             }
-
+            
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
-
             using (var client = new HttpClient())
             {
+                
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}/assignLicense?api-version=1.6", userid);
-
-                using (var response = await client.PostAsync(request, json))
-                {
-                    if (response.Content != null)
+                
+                    using (var response =  client.PostAsync(request, json)) //??
                     {
-                        res = await response.Content.ReadAsStringAsync();
-                    }
-                };
+                        //if (response.Equals(null));{
+                        response.Wait();
+                        //res = await response.Content.ReadAsStringAsync();
+                        //}
+                    };
             };
-            return obj;
+            return res;
         }
-        
+
         public static async Task<string> removeLicense(string userid, string skuid)
         {
             var token = await oAuth.getSessionToken();

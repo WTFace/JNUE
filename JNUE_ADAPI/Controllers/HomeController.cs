@@ -19,11 +19,10 @@ namespace JNUE_ADAPI.Controllers
         [HttpGet]
         public ActionResult Index()
         {
-            AzureAD.setUsageLocation("112@hddemo.co.kr");
-            AzureAD.setLicense("112@hddemo.co.kr", Properties.StuLicense,"", "");
+            AzureAD.getToken();
             return View();}
 
-        [HttpPost]
+        [AcceptVerbs( HttpVerbs.Post | HttpVerbs.Patch)] //이안에서는 token 안받아짐
         public ActionResult Index(StntNumbCheckViewModel model)
         {
             if (ModelState.IsValid)
@@ -53,7 +52,7 @@ namespace JNUE_ADAPI.Controllers
                                 if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "student")
                                 {
                                     if (haksa[0].status==1){ //재
-                                        AzureAD.setLicense(upn, "", Properties.PlusLicense, "\"a23b959c-7ce8-4e57-9140-b90eb88a9e97\",\"882e1d05-acd1-4ccb-8708-6ee03664b117\",\"2078e8df-cff6-4290-98cb-5408261a760a\"");
+                                        var res =AzureAD.setLicense(upn,Properties.StuLicense, Properties.PlusLicense, Properties.disables);
                                     }
                                     else if (haksa[0].status == 2){ //휴
                                         var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, "");
@@ -63,12 +62,12 @@ namespace JNUE_ADAPI.Controllers
                                 }
                                 else if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "faculty")
                                 {
-                                    if (haksa[0].status == 0){ //퇴직
-                                        AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
-                                    }
-                                    else{
-                                        var res = AzureAD.setLicense(upn, Properties.FacLicense,"", ""); //재직
-                                    }
+                                    //if (haksa[0].status == 0){ //퇴직
+                                    //    AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
+                                    //}
+                                    //else{
+                                    //    var res = AzureAD.setLicense(upn, Properties.FacLicense,"", ""); //재직
+                                    //}
                                 }
                                 return RedirectToAction("Alert", "Home");
                             }

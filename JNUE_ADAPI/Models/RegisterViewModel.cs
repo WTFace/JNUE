@@ -33,7 +33,8 @@ namespace JNUE_ADAPI.Models
         [StringLength(100, ErrorMessage = "{0}은(는) {2}자 이상이어야 합니다.", MinimumLength = 7)]
         [DataType(DataType.Password)]
         [Display(Name = "암호")]
-        [RegularExpression(@"^(?=.*[a-z])(?=.*\d).{3,15}$", ErrorMessage = "비밀번호는 1개 이상의 영소문자, 숫자를 포함하여 7~15자 이내로 입력하여야 합니다.")] //(?=.*[A-Z])(?=.*[^\da-zA-Z])
+        [RegularExpression(@"^(?=.*[a-z])(?=.*\d).{3,15}$", ErrorMessage = "비밀번호는 1개 이상의 영소문자, 숫자를 포함하여 7~15자 이내로 입력하여야 합니다.")] 
+        //(?=.*[A-Z])(?=.*[^\da-zA-Z])
         public string Password { get; set; }
 
         [DataType(DataType.Password)]
