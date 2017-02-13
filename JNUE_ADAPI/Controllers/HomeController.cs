@@ -44,31 +44,41 @@ namespace JNUE_ADAPI.Controllers
                                 if (haksa[0].status.ToString() != LocalAD.getSingleAttr("description", model.Stnt_Numb.ToString())) //학적변동
                                 {
                                     LocalAD.UpdateStatus(model.Stnt_Numb.ToString(), haksa[0].status.ToString());
-                                    TempData["status"] = "학적 상태가 변동되었습니다.";
+                                    if (haksa[0].status == 2){
+                                        TempData["status"] = "학적 상태가 '휴학'으로 변경되었습니다.";
+                                    }
+                                    else if (haksa[0].status == 1){
+                                        TempData["status"] = "학적 상태가 '재학'으로 변경되었습니다.";
+                                    }
+                                    else { TempData["status"] = "학적 상태가 '졸업/퇴직'으로 변경되었습니다."; }
+                                    
                                     //License();
-                                }
-
-                                AzureAD.setUsageLocation(upn);
-                                if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "student")
-                                {
-                                    if (haksa[0].status==1){ //재
-                                        var res =AzureAD.setLicense(upn,Properties.StuLicense, Properties.PlusLicense, Properties.disables);
+                                    AzureAD.setUsageLocation(upn);
+                                    if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "student")
+                                    {
+                                        if (haksa[0].status == 1){ //재
+                                            var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, Properties.disables);
+                                        }
+                                        else if (haksa[0].status == 2){ //휴
+                                            var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, "");
+                                        }
+                                        else{ //졸
+                                            var res = AzureAD.removeLicense(upn, Properties.PlusLicense);
+                                            AzureAD.removeLicense(upn, Properties.StuLicense);
+                                        }
                                     }
-                                    else if (haksa[0].status == 2){ //휴
-                                        var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, "");
-                                    }
-                                    else{ //졸
+                                    else if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "faculty")
+                                    {
+                                        if (haksa[0].status == 0){ //퇴직
+                                            AzureAD.removeLicense(upn, Properties.FacLicense);
+                                            //AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
+                                        }
+                                        else{
+                                            var res = AzureAD.setLicense(upn, Properties.FacLicense, "", ""); //재직
+                                        }
                                     }
                                 }
-                                else if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "faculty")
-                                {
-                                    //if (haksa[0].status == 0){ //퇴직
-                                    //    AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
-                                    //}
-                                    //else{
-                                    //    var res = AzureAD.setLicense(upn, Properties.FacLicense,"", ""); //재직
-                                    //}
-                                }
+                                
                                 return RedirectToAction("Alert", "Home");
                             }
                             else

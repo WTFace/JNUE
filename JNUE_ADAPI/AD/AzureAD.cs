@@ -78,7 +78,7 @@ namespace JNUE_ADAPI.AD
             } //
             else
             {
-                obj = "{\"addLicenses\": [], \"removeLicenses\": [\""+ skuid2 +"\"] }"; //휴
+                obj = "{\"addLicenses\": [{\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [\"" + skuid2 +"\"] }"; //휴
             }
             
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
@@ -92,8 +92,8 @@ namespace JNUE_ADAPI.AD
                     {
                         //if (response.Equals(null));{
                         response.Wait();
-                        //res = await response.Content.ReadAsStringAsync();
-                        //}
+                        res = response.ToString();
+                        //res = await response.Content.ReadAsStringAsync();}
                     };
             };
             return res;
