@@ -41,7 +41,5 @@ namespace JNUE_ADAPI.Models
         [Display(Name = "암호 확인")]
         [Compare("Password", ErrorMessage = "암호와 확인 암호가 일치하지 않습니다.")]
         public string ConfirmPassword { get; set; }
-
-        
     }
 }
