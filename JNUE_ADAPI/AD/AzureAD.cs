@@ -31,12 +31,12 @@ namespace JNUE_ADAPI.AD
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid);
-                using (var response = await client.GetAsync(request))
+                using (var response = client.GetAsync(request))
                 {
-                    if (response.Content != null)
-                    {
-                        res = await response.Content.ReadAsStringAsync();
-                    }
+                    //if (response.Content != null)
+                    //{
+                    response.Wait(); //}
+                    res = response.Result.IsSuccessStatusCode.ToString();
                 };
             };
             return res;

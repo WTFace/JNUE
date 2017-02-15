@@ -40,6 +40,11 @@ namespace JNUE_ADAPI.Controllers
                             {
                                 string upn = LocalAD.getSingleAttr("userPrincipalName", model.Stnt_Numb.ToString()); //@hddemo 포함
                                 TempData["upn"] = upn; //login시 id 넘겨줄 용도
+                                
+                                if (AzureAD.getUser(upn).Result.Equals("False"))
+                                {
+                                    TempData["false"] = "가입은 되었으나 아직 계정이 생성되지 않았습니다.\n계정이 생성되면 로그인 화면으로 갈 수 있습니다.";
+                                    return RedirectToAction("Index", "Home");}
 
                                 if (haksa[0].status.ToString() != LocalAD.getSingleAttr("description", model.Stnt_Numb.ToString())) //학적변동
                                 {
@@ -127,11 +132,12 @@ namespace JNUE_ADAPI.Controllers
             if (ModelState.IsValid)
             {
                 string cua = LocalAD.CreateUserAccount(model.ID, model.Password, _StntNumbModel.Stnt_Numb.ToString());
-                
+
                 if (cua != "NONE")
                 {
-                    return Redirect("https://adfs.hddemo.co.kr/adfs/ls/?lc=1042&client-request-id=4d5bbac1-8655-464f-acdc-862c63f8729b&username=" + LocalAD.getUserId(_StntNumbModel.Stnt_Numb.ToString()) + "&wa=wsignin1.0&wtrealm=urn%3afederation%3aMicrosoftOnline&wctx=estsredirect%3d2%26estsrequest%3drQIIAeNisFLOKCkpKLbS1y_ILypJzNHLT0vLTE7VS87P1csvSs9MAbGKhLgEDu6K9g1t83dbc6dNJ_lH0exVjGo4dernJOalZOal6yUWF1RcYGTsYmIxNDAx2sTE6uvs6-R5gmnCWblbTIL-RemeKeHFbqkpqUWJJZn5eY-YeEOLU4v883IqQ_KzU_N2MauYmaaZmFgYGeomJiUn6ZqYmJnpWlgkp-iaGKeamhmlJiYnJpkcYNkQcoFF4BULjwGzFQcHlwCDBIMCww8WxkWsQIcHTr9_ZHZxv3Pj4e63y8TZ6k-x6od6V3mZGjmnGmVb5Jik-7oX5WubuCa65mcaJke4h3kY-BYkZkQ5WlalZbjamlsZTmATmsDGtIvTljgP25ckFqWnltiqGqWlpKYlluaUgIUB0&popupui="); 
-                }
+                    TempData["false"] = "가입은 되었으나 아직 계정이 생성되지 않았습니다.\n계정이 생성되면 로그인 화면으로 갈 수 있습니다.";
+                    return RedirectToAction("Index", "Home");
+                }    
                 ModelState.AddModelError("", "사용자를 추가할 수 없습니다.\n관리자에게 문의하여 주시기 바랍니다.");
             }
             return View(model);
