@@ -65,18 +65,17 @@ namespace JNUE_ADAPI.Controllers
                                             var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, Properties.disables);
                                         }
                                         else if (haksa[0].status == 2){ //휴
-                                            var res = AzureAD.setLicense(upn, Properties.StuLicense, Properties.PlusLicense, "");
+                                            var res = AzureAD.setLicense(upn, Properties.StuLicense, "", "");
+                                            AzureAD.removeLicense(upn, Properties.PlusLicense);
                                         }
                                         else{ //졸
-                                            var res = AzureAD.removeLicense(upn, Properties.PlusLicense);
-                                            AzureAD.removeLicense(upn, Properties.StuLicense);
+                                            AzureAD.removeLicense(upn, "\""+Properties.StuLicense+"\""+","+"\""+Properties.PlusLicense+"\"");
                                         }
                                     }
                                     else if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "faculty")
                                     {
                                         if (haksa[0].status == 0){ //퇴직
-                                            AzureAD.removeLicense(upn, Properties.FacLicense);
-                                            //AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
+                                            AzureAD.removeLicense(upn, "\""+Properties.FacLicense+"\"");
                                         }
                                         else{
                                             var res = AzureAD.setLicense(upn, Properties.FacLicense, "", ""); //재직

@@ -75,10 +75,10 @@ namespace JNUE_ADAPI.AD
             if (disables.Equals("") != true)
             {
                 obj = "{\"addLicenses\": [{\"disabledPlans\": ["+ disables +"], \"skuId\": \"" + skuid2 + "\"}, {\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [] }";
-            } //
+            }
             else
             {
-                obj = "{\"addLicenses\": [{\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [\"" + skuid2 +"\"] }"; //휴
+                obj = "{\"addLicenses\": [{\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [] }"; //휴
             }
             
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
@@ -99,11 +99,11 @@ namespace JNUE_ADAPI.AD
             return res;
         }
 
-        public static async Task<string> removeLicense(string userid, string skuid)
+        public static async Task<string> removeLicense(string userid, string removes)
         {
             var token = await oAuth.getSessionToken();
             var res = "";
-            var obj = "{ \"addLicenses\":[], \"removeLicenses\":[\"" + skuid + "\"] }";
+            var obj = "{ \"addLicenses\":[], \"removeLicenses\":[" + removes + "] }";
 
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
 
@@ -112,12 +112,10 @@ namespace JNUE_ADAPI.AD
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}/assignLicense?api-version=1.6", userid);
 
-                using (var response = await client.PostAsync(request, json))
+                using (var response = client.PostAsync(request, json))
                 {
-                    if (response.Content != null)
-                    {
-                        res = await response.Content.ReadAsStringAsync();
-                    }
+                    response.Wait();
+                    res = response.Result.ToString();
                 };
             };
             return res;
