@@ -33,9 +33,7 @@ namespace JNUE_ADAPI.AD
                 var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid);
                 using (var response = client.GetAsync(request))
                 {
-                    //if (response.Content != null)
-                    //{
-                    response.Wait(); //}
+                    response.Wait();
                     res = response.Result.IsSuccessStatusCode.ToString();
                 };
             };
@@ -54,47 +52,43 @@ namespace JNUE_ADAPI.AD
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid);
 
-                using (var response = await PatchAsync(client, request, json)) //Patch
+                using (var response = PatchAsync(client, request, json)) //Patch
                 {
-                    if (response.Content != null)
-                    {
-                        res = await response.Content.ReadAsStringAsync(); 
-                    }
+                    response.Wait();
+                    res = response.ToString();
                 };
             };
             return res;
         }
-        
+
 
         public static async Task<string> setLicense(string userid, string skuid1, string skuid2, string disables)
         {
             var token = await oAuth.getSessionToken();
-            var res="";
+            var res = "";
             var obj = "";
-            
+
             if (disables.Equals("") != true)
             {
-                obj = "{\"addLicenses\": [{\"disabledPlans\": ["+ disables +"], \"skuId\": \"" + skuid2 + "\"}, {\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [] }";
+                obj = "{\"addLicenses\": [{\"disabledPlans\": [" + disables + "], \"skuId\": \"" + skuid2 + "\"}, {\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [] }";
             }
             else
             {
                 obj = "{\"addLicenses\": [{\"disabledPlans\": [], \"skuId\": \"" + skuid1 + "\"}], \"removeLicenses\": [] }"; //휴
             }
-            
+
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
-                
+
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}/assignLicense?api-version=1.6", userid);
-                
-                    using (var response =  client.PostAsync(request, json)) //??
-                    {
-                        //if (response.Equals(null));{
-                        response.Wait();
-                        res = response.ToString();
-                        //res = await response.Content.ReadAsStringAsync();}
-                    };
+
+                using (var response = client.PostAsync(request, json))
+                {
+                    response.Wait();
+                    res = response.ToString();
+                };
             };
             return res;
         }

@@ -2,12 +2,13 @@
 {
     using log4net;
     using Models;
+    using Oracle.ManagedDataAccess.Client;
     using System;
     using System.Collections.Generic;
     using System.DirectoryServices;
     using System.Linq;
     using System.Reflection;
-    
+
 
     /// LocalAD
     public class LocalAD
@@ -199,21 +200,41 @@
                 DirectoryEntry entry_ou = entry.Children.Find("OU=O365user");
                 DirectoryEntry entry_cn = entry_ou.Children.Find("OU=user");
                 DirectoryEntry entry_ur = entry_cn.Children.Add("CN=" + userid, "user");
-
-                using (var haksaContext = new DAL.HaksaContext())
-                {             
-                    var haksa = haksaContext.HaksaMembers.Where(m => m.stnt_numb.ToString() == stnt_numb).ToList();
-                    entry_ur.Properties["displayName"].Add(haksa[0].stnt_knam);
-                    if (haksa[0].role == "학부")
+                string oradb = "Data Source=(DESCRIPTION =(ADDRESS = (PROTOCOL = TCP)(HOST = 203.249.112.105)(PORT = 1521))(CONNECT_DATA =(SERVER = DEDICATED)(SERVICE_NAME = haksadb)));User Id=office; Password=office365;";
+                using (OracleConnection conn = new OracleConnection(oradb))
+                {
+                    Dictionary<string, string> haksa = new Dictionary<string, string>();
+                    try
+                    {
+                        conn.Open();
+                        string sql = "select user_used,role,status,stnt_knam from office365 where stnt_numb= '" + stnt_numb + "'";
+                        OracleCommand cmd = new OracleCommand(sql, conn);
+                        cmd.CommandType = System.Data.CommandType.Text;
+                        OracleDataReader dr = cmd.ExecuteReader();
+                        while (dr.Read())
+                        {
+                            haksa.Add("user_used", dr.GetString(0));
+                            haksa.Add("role", dr.GetString(1));
+                            haksa.Add("status", dr.GetString(2));
+                            haksa.Add("stnt_knam", dr.GetString(3));
+                        }
+                        conn.Close();
+                    }
+                    catch (Exception ex)
+                    {
+                        ex.ToString();
+                    }
+                    entry_ur.Properties["displayName"].Add(haksa["stnt_knam"]);
+                    if (haksa["role"] == "학생")
                     {
                         entry_ur.Properties["employeeType"].Add("student");
                     }
-                    else if (haksa[0].role == "교수")
+                    else if (haksa["role"] == "교직원")
                     {
                         entry_ur.Properties["employeeType"].Add("faculty");
                     }
                 }
-
+                
                 entry_ur.Properties["cn"].Add(userid);
                 entry_ur.Properties["name"].Add(userid);
                 entry_ur.Properties["sAMAccountName"].Add(userid);  

@@ -29,13 +29,14 @@
             @Html.DropDownListFor(model => model.Day, Enumerable.Range(1, 31).Select(i => new SelectListItem { Value = i.ToString(), Text = i.ToString() }), new { @class = "form-control" })
         </div>
     </div>*@
-    <div class="form-group" style="margin-bottom:110px">
+    <div class="form-group" style="margin-bottom:160px">
         <div class="col-md-offset-2 col-md-10">
             <input type="submit" class="btn btn-default" value="확인" />
         </div>
         <h4 style="padding:60px 0px 20px 0px; color:purple;"> @Html.Raw(TempData["false"])</h4>
     </div>
 }
+
 @section Scripts {
     @Scripts.Render("~/bundles/jqueryval")
 }
