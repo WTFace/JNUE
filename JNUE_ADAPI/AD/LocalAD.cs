@@ -204,7 +204,7 @@
                 {             
                     var haksa = haksaContext.HaksaMembers.Where(m => m.stnt_numb.ToString() == stnt_numb).ToList();
                     entry_ur.Properties["displayName"].Add(haksa[0].stnt_knam);
-                    if (haksa[0].role == "학부")
+                    if (haksa[0].role == "학생")
                     {
                         entry_ur.Properties["employeeType"].Add("student");
                     }

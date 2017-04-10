@@ -15,16 +15,17 @@ namespace JNUE_ADAPI.Controllers
         readonly ILog logger = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         static StntNumbCheckViewModel _StntNumbModel = new StntNumbCheckViewModel();
         #endregion
-        
-        [HttpGet]
-        public ActionResult Index()
-        {
-            AzureAD.getToken();
-            return View();}
 
-        [AcceptVerbs( HttpVerbs.Post | HttpVerbs.Patch)] //이안에서는 token 안받아짐
+        //[HttpGet]
+        //public ActionResult Index()
+        //{
+        //    return View();
+        //}
+
+        //[AcceptVerbs( HttpVerbs.Post | HttpVerbs.Patch)] //이안에서는 token 안받아짐
         public ActionResult Index(StntNumbCheckViewModel model)
         {
+            AzureAD.getToken();
             if (ModelState.IsValid)
             {
                 using (var haksaContext = new HaksaContext())
@@ -40,6 +41,12 @@ namespace JNUE_ADAPI.Controllers
                             {
                                 string upn = LocalAD.getSingleAttr("userPrincipalName", model.Stnt_Numb.ToString()); //@hddemo 포함
                                 TempData["upn"] = upn; //login시 id 넘겨줄 용도
+
+                                if (AzureAD.getUser(upn).Result.Equals("False"))
+                                {
+                                    TempData["false"] = "1";
+                                    return RedirectToAction("Index", "Home");
+                                }
 
                                 if (haksa[0].status.ToString() != LocalAD.getSingleAttr("description", model.Stnt_Numb.ToString())) //학적변동
                                 {
@@ -69,12 +76,14 @@ namespace JNUE_ADAPI.Controllers
                                     }
                                     else if (LocalAD.getSingleAttr("employeeType", model.Stnt_Numb.ToString()) == "faculty")
                                     {
-                                        if (haksa[0].status == 0){ //퇴직
-                                            AzureAD.removeLicense(upn, Properties.FacLicense);
-                                            //AzureAD.setLicense(upn, "", Properties.FacLicense, "43de0ff5-c92c-492b-9116-175376d08c38");
+                                        if (haksa[0].status == 0)
+                                        { //퇴직
+                                            var res = AzureAD.setLicense(upn, Properties.FacLicense, "", "");
+                                            AzureAD.removeLicense(upn, "\"" + Properties.PlusLicense + "\"");
                                         }
-                                        else{
-                                            var res = AzureAD.setLicense(upn, Properties.FacLicense, "", ""); //재직
+                                        else
+                                        {
+                                            var res = AzureAD.setLicense(upn, Properties.FacLicense, Properties.PlusLicense, Properties.disables); //재직
                                         }
                                     }
                                 }
@@ -82,8 +91,8 @@ namespace JNUE_ADAPI.Controllers
                                 return RedirectToAction("Alert", "Home");
                             }
                             else
-                            {                                    
-                                _StntNumbModel = model;
+                            {
+                                TempData["numb"] = model.Stnt_Numb;
                                 // 없으면 회원가입페이지로 리디렉션
                                 return RedirectToAction("RegisterJnueO365", "Home");
                             }
@@ -91,7 +100,7 @@ namespace JNUE_ADAPI.Controllers
                         else if (haksa.Count == 0)
                         {
                             // 조회 결과가 없으면
-                            ModelState.AddModelError("", "입력하신 학번이 조회되지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
+                            //ModelState.AddModelError("", "입력하신 학번이 조회되지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
                         }
                         else if (haksa.Count > 1)
                         {
@@ -124,13 +133,15 @@ namespace JNUE_ADAPI.Controllers
         [HttpPost]
         public ActionResult RegisterJnueO365(RegisterViewModel model)
         {
+            var numb = TempData["numb"];
             if (ModelState.IsValid)
             {
-                string cua = LocalAD.CreateUserAccount(model.ID, model.Password, _StntNumbModel.Stnt_Numb.ToString());
+                string cua = LocalAD.CreateUserAccount(model.ID, model.Password, numb.ToString());
                 
                 if (cua != "NONE")
                 {
-                    return Redirect("https://adfs.hddemo.co.kr/adfs/ls/?lc=1042&client-request-id=4d5bbac1-8655-464f-acdc-862c63f8729b&username=" + LocalAD.getUserId(_StntNumbModel.Stnt_Numb.ToString()) + "&wa=wsignin1.0&wtrealm=urn%3afederation%3aMicrosoftOnline&wctx=estsredirect%3d2%26estsrequest%3drQIIAeNisFLOKCkpKLbS1y_ILypJzNHLT0vLTE7VS87P1csvSs9MAbGKhLgEDu6K9g1t83dbc6dNJ_lH0exVjGo4dernJOalZOal6yUWF1RcYGTsYmIxNDAx2sTE6uvs6-R5gmnCWblbTIL-RemeKeHFbqkpqUWJJZn5eY-YeEOLU4v883IqQ_KzU_N2MauYmaaZmFgYGeomJiUn6ZqYmJnpWlgkp-iaGKeamhmlJiYnJpkcYNkQcoFF4BULjwGzFQcHlwCDBIMCww8WxkWsQIcHTr9_ZHZxv3Pj4e63y8TZ6k-x6od6V3mZGjmnGmVb5Jik-7oX5WubuCa65mcaJke4h3kY-BYkZkQ5WlalZbjamlsZTmATmsDGtIvTljgP25ckFqWnltiqGqWlpKYlluaUgIUB0&popupui="); 
+                    TempData["false"] = "1";
+                    return RedirectToAction("Index", "Home");
                 }
                 ModelState.AddModelError("", "사용자를 추가할 수 없습니다.\n관리자에게 문의하여 주시기 바랍니다.");
             }

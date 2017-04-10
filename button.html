@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+
+</head>
+<body>
+
+<button onclick="oo()">Button</button>
+
+<script type="text/javascript">
+var url = "http://211.225.159.44"
+var method = "POST";
+var postData = {"Stnt_Numb":"111"};
+var async = true;
+
+// var request = new XMLHttpRequest();
+// request.open(method, url, async);
+// request.setRequestHeader("Content-Type", "text/javascript;charset=UTF-8");
+// request.send();
+function oo(){
+function createCORSRequest(method, url, postData) {
+  var xhr = new XMLHttpRequest();
+  if ("withCredentials" in xhr) {
+    xhr.open(method, url, true);
+  } else if (typeof XDomainRequest != "undefined") {
+    xhr = new XDomainRequest();
+    xhr.open(method, url);
+  } else {
+    xhr = null;
+  }
+  return xhr;
+}
+
+var xhr = createCORSRequest(method, url, postData);
+xhr.withCredentials = true;
+xhr.send()
+if (!xhr) {
+  throw new Error('CORS not supported');
+}
+}
+</script>
+
+</body>
+</html>

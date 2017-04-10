@@ -36,3 +36,4 @@
         }
     }
 }
+//https://mso365adfs.jnue.ac.kr/adfs/ls/?lc=1042&client-request-id=20669219-886e-4dc3-8baa-07aed4ed1503&wa=wsignin1.0&wtrealm=urn%3afederation%3aMicrosoftOnline&wctx=estsredirect%3d2%26estsrequest%3drQIIAeNisFLOKCkpKLbS1y_ILypJzNHLT0vLTE7VS87P1csvSs9MAbGKhLgEJCelKeR1HPbtXsW-7spbUeZVjGo4dernJOalZOal6yUWF1RcYGTsYmIxNDAx2sTE6uvs6-R5gmnCWblbTIL-RemeKeHFbqkpqUWJJZn5eY-YeEOLU4v883IqQ_KzU_MmMfPl5Kdn5sUXF6XFp-XklwMFgMYXJCaXxJdkJmenluxiVjFLsQAaYGCha2RmmKhrYmZoqptoZGqpa2RpkGpoZGZilGaWcoBlQ8gFFoEfLIyLWIF-Edr3q1k4v8Z3DS9Pa0wRl9IpVv2stOxwZ6-MsMhKy6AUz6p8x1BfHzNvY7N0i2SDNAtPx-Is_YB0baPUAgNPWxMrw12ctsT53r4ksSg9tcRW1SgtJTUtsTSnBCwMAA2&popupui=

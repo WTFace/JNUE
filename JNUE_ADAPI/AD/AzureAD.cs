@@ -31,12 +31,11 @@ namespace JNUE_ADAPI.AD
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}?api-version=1.6", userid);
-                using (var response = await client.GetAsync(request))
+                using (var response = client.GetAsync(request))
                 {
-                    if (response.Content != null)
-                    {
-                        res = await response.Content.ReadAsStringAsync();
-                    }
+                    response.Wait();
+                    res = response.Result.IsSuccessStatusCode.ToString();
+                    
                 };
             };
             return res;
@@ -84,11 +83,10 @@ namespace JNUE_ADAPI.AD
             var json = new StringContent(obj, Encoding.UTF8, "application/json");
             using (var client = new HttpClient())
             {
-                
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
                 var request = string.Format(Properties.AzGraphApi + "users/{0}/assignLicense?api-version=1.6", userid);
                 
-                    using (var response =  client.PostAsync(request, json)) //??
+                    using (var response =  client.PostAsync(request, json)) 
                     {
                         //if (response.Equals(null));{
                         response.Wait();

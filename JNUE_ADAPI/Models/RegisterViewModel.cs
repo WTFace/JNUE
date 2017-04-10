@@ -5,8 +5,8 @@ namespace JNUE_ADAPI.Models
 {
     public class StntNumbCheckViewModel
     {
-        [Required]
-        [Display(Name = "학번")]
+        //[Required]
+        [Display(Name = "학번/교번")]
         public int Stnt_Numb { get; set; }
         //[Required]
         //[Display(Name = "성명")]
