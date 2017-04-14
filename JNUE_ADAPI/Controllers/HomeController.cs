@@ -16,16 +16,16 @@ namespace JNUE_ADAPI.Controllers
         static StntNumbCheckViewModel _StntNumbModel = new StntNumbCheckViewModel();
         #endregion
 
-        //[HttpGet]
-        //public ActionResult Index()
-        //{
-        //    return View();
-        //}
-
-        //[AcceptVerbs( HttpVerbs.Post | HttpVerbs.Patch)] //이안에서는 token 안받아짐
-        public ActionResult Index(StntNumbCheckViewModel model)
+        [HttpGet]
+        public ActionResult Index()
         {
             AzureAD.getToken();
+            return View();
+        }
+
+        [AcceptVerbs(HttpVerbs.Post | HttpVerbs.Patch)] //이안에서는 token 안받아짐
+        public ActionResult Index(StntNumbCheckViewModel model)
+        {
             if (ModelState.IsValid)
             {
                 using (var haksaContext = new HaksaContext())
@@ -100,7 +100,7 @@ namespace JNUE_ADAPI.Controllers
                         else if (haksa.Count == 0)
                         {
                             // 조회 결과가 없으면
-                            //ModelState.AddModelError("", "입력하신 학번이 조회되지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
+                            ModelState.AddModelError("", "입력하신 학번이 조회되지 않습니다.\n관리자에게 문의하여 주시기 바랍니다.");
                         }
                         else if (haksa.Count > 1)
                         {

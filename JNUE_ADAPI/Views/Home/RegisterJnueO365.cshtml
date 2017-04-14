@@ -3,12 +3,13 @@
     ViewBag.Title = "MS Office 365 계정을 등록합니다";
 }
 
-<h3>@ViewBag.Title.</h3>
-
+<div style="margin-left:90px;">
+    <h3>@ViewBag.Title.</h3>
+    <h5>등록후 계정 생성까지 45분정도 걸립니다.</h5>
+</div>
 @using (Html.BeginForm("RegisterJnueO365", "Home", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
 {
     @Html.AntiForgeryToken()
-    <h5>등록후 계정 생성까지 45분정도 걸립니다.</h5>
     <hr />
     @Html.ValidationSummary("", new { @class = "text-danger" })
     <div class="form-group">
